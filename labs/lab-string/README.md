@@ -277,7 +277,7 @@ Los tests de `IsEmpty` ya están activos en `StringTest.c`. Corré `make test` y
 
 **P1** — `IsEmpty` podría haberse escrito también como `return s[0] == '\0'`. ¿Son equivalentes? ¿Por qué?
 
-> R:
+> R:Si, son equivalentes. En C, un string es un arreglo de caracteres y utilizar el operador indice s[0] es exactamente equivalente a desreferenciar el puntero con *s.
 
 ---
 
@@ -328,14 +328,14 @@ make test
 
 **P2** — ¿Qué hace `s + 1`? ¿Por qué avanza al siguiente carácter y no al siguiente byte?
 
-> R:
+> R:Realiza aritmetica de punteros sumando una posicion de memoria.Es de tipo char, un char ocupa un byte por lo que sumar 1 desplaza el puntero exactamente los bytes necesarios para apuntar al siguiente caracter de la cadena en lugar de sumar un byte arbitrario.
 
 **P3** — Si llamaras a `GetLength(NULL)`, ¿qué pasaría? ¿Por qué las precondiciones del contrato dicen `s != NULL`?
 
-> R:
+> R:El programa intentaria desreferenciar un puntero nulo, lo que produciria un error de ejecucion . Las precondiciones especifican s != NULL para garantizar que la direccion de memoria pasada como argumento sea valida antes de operar sobre ella.
 
 ```
-GETLENGTH_PASA=
+GETLENGTH_PASA=SI
 ```
 _(escribí SI cuando todos los tests de GetLength pasen)_
 
@@ -367,7 +367,7 @@ El `while` termina cuando alguna de las dos cadenas llega a `'\0'`. Después dev
 
 **P4** — ¿Qué dos casos están mal cubiertos por `return 1`? Describí un ejemplo para cada uno.
 
-> R:
+> R:El bucle while se detiene tan pronto como una de las dos cadenas llega al final (/0). Si sale del bucle, significa que los caracteres comparados hasta ahi coincidieron, pero el codigo actual devuelve 1 directamente sin comprobar si ambas terminaron al mismo tiempo.
 
 #### Corrección
 
@@ -384,7 +384,7 @@ make test
 ```
 
 ```
-AREEQUAL_PASA=
+AREEQUAL_PASA=SI
 ```
 _(escribí SI cuando todos los tests de AreEqual pasen)_
 
@@ -414,7 +414,7 @@ int AreDecimalDigits(const char *s) {
 
 **P5** — ¿Por qué la cadena vacía no debería considerarse un conjunto de dígitos decimales? Pensalo desde la especificación matemática.
 
-> R:
+> R:Desde la especificación matemática, una cadena vacía no posee elementos, por lo que no contiene ningún dígito numérico. Por definición formal, evaluar la presencia de dígitos sobre un conjunto vacío no puede retornar un valor de éxito (1), ya que no hay ningún dígito decimal que conformen una expresión válida; por lo tanto, debe retornar 0 (falso).
 
 #### Corrección
 
@@ -425,7 +425,7 @@ make test
 ```
 
 ```
-AREDECIMALDIGITS_PASA=
+AREDECIMALDIGITS_PASA=SI
 ```
 _(escribí SI cuando todos los tests de AreDecimalDigits pasen)_
 
@@ -452,7 +452,7 @@ make test
 ```
 
 ```
-CONTAINS_PASA=
+CONTAINS_PASA=SI
 ```
 _(escribí SI cuando todos los tests de Contains pasen)_
 
@@ -467,7 +467,7 @@ Antes de implementar, discutí con tu equipo:
 
 **P6** — Conclusión de la discusión:
 
-> R:
+> R:No tiene sentido que ToInteger forme parte de la biblioteca básica de strings, ya que involucra lógica de conversión de tipos de datos y parseo numérico que excede la manipulación pura de cadenas. Es correcto tenerla en un módulo separado (Conversion) para mantener el principio de cohesión y separación de responsabilidades.
 
 ---
 
@@ -494,7 +494,7 @@ int ToInteger(const char *s) {
 
 **P7** — El loop acumula correctamente el valor en `resultado`. ¿Qué está mal en el `return`?
 
-> R:
+> R:Lo que está mal es que retorna únicamente la variable signo (o un valor fijo según el signo), ignorando por completo el número acumulado en la variable resultado. Debe retornar el producto de ambos: resultado * signo.
 
 #### Corrección
 
@@ -506,10 +506,10 @@ make test
 
 **P8** — La expresión `*s - '0'` convierte un carácter dígito al entero correspondiente. ¿Por qué funciona? ¿Qué devuelve `'3' - '0'`?
 
-> R:
+> R:Funciona porque en la tabla ASCII los caracteres numéricos ('0' al '9') están ordenados de forma consecutiva. Al restar el valor ASCII del carácter '0' al carácter actual, se obtiene su valor numérico real.Devuelve el número entero 3.
 
 ```
-TOINTEGER_PASA=
+TOINTEGER_PASA=SI
 ```
 _(escribí SI cuando todos los tests de ToInteger pasen)_
 
@@ -562,7 +562,7 @@ foo
 
 **P9** — ¿Por qué `(void)argc` suprime un warning? ¿Cuándo sería necesario usar `argc`?
 
-> R:
+> R:Porque le avisa explicitamente al compilador que el valor de argc se descarta de forma intencional. Seri necesasrio usarlo cuando el programa requiera validar una cantidad exacta o minima de argumentos obligatorios en la linea de comandos.
 
 ---
 
@@ -589,7 +589,7 @@ Salida esperada:
 ```
 
 ```
-LONGITUDES_PASA=
+LONGITUDES_PASA=SI
 ```
 _(SI o NO)_
 
@@ -616,7 +616,7 @@ make mayorlongitud
 ```
 
 ```
-MAYORLONGITUD_PASA=
+MAYORLONGITUD_PASA=SI
 ```
 _(SI o NO)_
 
@@ -635,7 +635,7 @@ make todosiguales
 ```
 
 ```
-TODOSIGUALES_PASA=
+TODOSIGUALES_PASA=SI
 ```
 _(SI o NO)_
 
@@ -652,7 +652,7 @@ make suma
 ```
 
 ```
-SUMA_PASA=
+SUMA_PASA=SI
 ```
 _(SI o NO)_
 
@@ -662,15 +662,15 @@ _(SI o NO)_
 
 **P10** — `GetLength` es recursiva pero en C una llamada recursiva consume un stack frame. Si llamaras `GetLength` con un string de 1.000.000 de caracteres, ¿qué pasaría? ¿Cómo lo resolverías?
 
-> R:
+> R:Ocurriría un desbordamiento de pila (stack overflow) porque se excederían los límites de memoria al acumular un millón de llamadas activas. Se resolvería implementando la función de forma iterativa (con un bucle while o for) en lugar de recursiva.
 
 **P11** — En la Parte III, todos los programas usan `char **arg` para iterar en vez de un índice entero. ¿Qué ventaja tiene este estilo? ¿Cuándo sería preferible usar el índice?
 
-> R:
+> R:La ventaja es que utiliza aritmética de punteros pura, evitando la gestión manual de índices y haciendo el código más idiomático y eficiente en C. Sería preferible usar un índice entero cuando se requiere acceso aleatorio o directo a elementos específicos del arreglo en cualquier orden.
 
 **P12** — En C, `"hola"` es un literal de tipo `const char *`. Si intentaras modificar un carácter con `s[0] = 'H'`, el comportamiento es indefinido. ¿Por qué? ¿En qué parte de la memoria viven los literales?
 
-> R:
+> R:Los literales de cadena residen en una sección de memoria de solo lectura (rodata). Intentar modificarlos provoca un fallo de segmentación porque el sistema operativo protege rigurosamente esa zona contra escrituras.
 
 ---
 
